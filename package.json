@@ -28,7 +28,7 @@
     "express-csrf-double-submit-cookie": "^1.1.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "json2csv": "^6.0.0",
+    "json2csv": "6.0.0-alpha.2",
     "pdfkit": "^0.14.0",
     "@tatumio/tatum": "^4.1.15",
     "ws": "^8.15.1",
