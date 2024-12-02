@@ -9,7 +9,7 @@
     "test": "pnpm jest --coverage",
     "lint": "pnpm eslint .",
     "format": "pnpm prettier --write .",
-    "prepare": "pnpm husky install",
+    "prepare": "husky install",
     "audit": "pnpm audit"
   },
   "dependencies": {
