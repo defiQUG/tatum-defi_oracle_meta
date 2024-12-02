@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defi Oracle Meta Address Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .result-card {
+            margin-top: 20px;
+            display: none;
+        }
+        .loading {
+            display: none;
+        }
+        .currency-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .secondary-value {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .copy-btn {
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">Defi Oracle Meta Address Checker</span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Check Ethereum Address</h5>
+                        <form id="addressForm">
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Ethereum Address</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="address" required
+                                        placeholder="0x... or IBAN">
+                                    <button class="btn btn-outline-secondary" type="button" id="pasteBtn">
+                                        <i class="bi bi-clipboard"></i> Paste
+                                    </button>
+                                </div>
+                                <div class="form-text">Enter an Ethereum address or IBAN format</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Check Address</button>
+                        </form>
+
+                        <div id="loading" class="loading mt-3">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border text-primary me-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span>Fetching data...</span>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-card">
+                            <h6 class="mt-4">Results</h6>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-3">Address Formats</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-3">ETH Address:</div>
+                                        <div class="col-9">
+                                            <span id="ethAddress"></span>
+                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ethAddress"></i>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">IBAN:</div>
+                                        <div class="col-9">
+                                            <span id="ibanAddress"></span>
+                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ibanAddress"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-3">Balance</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <span id="balance" class="currency-value"></span>
+                                            <span id="usdBalance" class="secondary-value ms-2"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-3">Transaction History</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-6">
+                                            <div>Transaction Count:</div>
+                                            <div id="txCount" class="currency-value"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div>Last Transaction:</div>
+                                            <div id="lastTx" class="secondary-value"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-3">Network Information</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-3">Network:</div>
+                                        <div class="col-9" id="network"></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">Chain ID:</div>
+                                        <div class="col-9" id="chainId"></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">Gas Price:</div>
+                                        <div class="col-9" id="gasPrice"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"></script>
+    
+    <script>
+        const CONFIG = {
+            NETWORK_NAME: 'Defi Oracle Meta Mainnet',
+            CHAIN_ID: 138,
+            RPC_URL: 'http://102.133.148.122:8545'
+        };
+
+        // Initialize Web3
+        const web3 = new Web3(CONFIG.RPC_URL);
+
+        // Helper function to format currency
+        function formatCurrency(value, decimals = 4) {
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(value);
+        }
+
+        // Helper function to copy to clipboard
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                alert('Copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+
+        // Handle paste button
+        document.getElementById('pasteBtn').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('address').value = text;
+            } catch (err) {
+                console.error('Failed to paste:', err);
+            }
+        });
+
+        // Handle copy buttons
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const elementId = btn.getAttribute('data-copy');
+                const text = document.getElementById(elementId).textContent;
+                copyToClipboard(text);
+            });
+        });
+
+        async function getEthPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                return data.ethereum.usd;
+            } catch (error) {
+                console.error('Error fetching ETH price:', error);
+                return null;
+            }
+        }
+
+        async function checkAddress(address) {
+            try {
+                let ethAddress = address;
+                
+                // Convert IBAN to ETH address if needed
+                if (address.startsWith('XE')) {
+                    ethAddress = web3.eth.Iban.toAddress(address);
+                }
+
+                // Create IBAN from ETH address
+                const iban = web3.eth.Iban.fromAddress(ethAddress);
+                
+                // Get ETH price
+                const ethPrice = await getEthPrice();
+                
+                // Get balance
+                const balance = await web3.eth.getBalance(ethAddress);
+                const balanceInEth = web3.utils.fromWei(balance, 'ether');
+                const balanceInUsd = ethPrice ? (balanceInEth * ethPrice) : null;
+                
+                // Get transaction count
+                const txCount = await web3.eth.getTransactionCount(ethAddress);
+                
+                // Get gas price
+                const gasPrice = await web3.eth.getGasPrice();
+                const gasPriceGwei = web3.utils.fromWei(gasPrice, 'gwei');
+
+                // Update UI
+                document.getElementById('ethAddress').textContent = ethAddress;
+                document.getElementById('ibanAddress').textContent = iban.toString();
+                document.getElementById('balance').textContent = `${formatCurrency(balanceInEth)} ETH`;
+                if (balanceInUsd) {
+                    document.getElementById('usdBalance').textContent = `($${formatCurrency(balanceInUsd, 2)} USD)`;
+                }
+                document.getElementById('txCount').textContent = txCount;
+                document.getElementById('network').textContent = CONFIG.NETWORK_NAME;
+                document.getElementById('chainId').textContent = CONFIG.CHAIN_ID;
+                document.getElementById('gasPrice').textContent = `${formatCurrency(gasPriceGwei)} Gwei`;
+                
+                return true;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error checking address: ' + error.message);
+                return false;
+            }
+        }
+
+        document.getElementById('addressForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const address = document.getElementById('address').value;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            const success = await checkAddress(address);
+            
+            loading.style.display = 'none';
+            if (success) {
+                result.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

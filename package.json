@@ -1,0 +1,45 @@
+{
+  "name": "defi-oracle-meta-connector",
+  "version": "1.0.0",
+  "description": "Connector for Defi Oracle Meta Mainnet",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "snyk": "snyk test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Defi-Oracle-Meta-Blockchain/tatum-defi_oracle_meta.git"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "defi",
+    "oracle",
+    "tatum",
+    "web3"
+  ],
+  "author": "Defi Oracle Meta Blockchain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Defi-Oracle-Meta-Blockchain/tatum-defi_oracle_meta/issues"
+  },
+  "homepage": "https://github.com/Defi-Oracle-Meta-Blockchain/tatum-defi_oracle_meta#readme",
+  "dependencies": {
+    "@tatumio/tatum": "^3.1.5",
+    "dotenv": "16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "web3": "^1.5.2"
+  },
+  "devDependencies": {
+    "snyk": "^1.1250.0"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8.15.1"
+  }
+} 

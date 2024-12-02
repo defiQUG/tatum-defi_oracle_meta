@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Defi Oracle Meta Mainnet Connector</title>
+</head>
+<body>
+    <h1>Defi Oracle Meta Mainnet Network Details</h1>
+    <div id="network-info">
+        <p><strong>Network Name:</strong> Defi Oracle Meta Mainnet</p>
+        <p><strong>Chain ID:</strong> 138</p>
+        <p><strong>Currency Symbol:</strong> ETH</p>
+        <p><strong>RPC URLs:</strong></p>
+        <ul>
+            <li>HTTP: http://102.133.148.122:8545</li>
+            <li>WSS: http://102.133.148.122:8546</li>
+        </ul>
+        <p><strong>Explorers:</strong></p>
+        <ul>
+            <li><a href="http://102.133.148.122:26000" target="_blank">Blockscout Explorer</a></li>
+            <li><a href="http://102.133.148.122:25000" target="_blank">Quorum Explorer</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Network Configuration
+        const CONFIG = {
+            NETWORK_NAME: 'Defi Oracle Meta Mainnet',
+            CHAIN_ID: 138,
+            CURRENCY: 'ETH',
+            RPC_URL: 'http://102.133.148.122:8545',
+            WSS_URL: 'http://102.133.148.122:8546',
+            BLOCKSCOUT_URL: 'http://102.133.148.122:26000',
+            QUORUM_URL: 'http://102.133.148.122:25000'
+        };
+
+        // Add network to MetaMask
+        async function addNetwork() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: `0x${CONFIG.CHAIN_ID.toString(16)}`,
+                            chainName: CONFIG.NETWORK_NAME,
+                            nativeCurrency: {
+                                name: CONFIG.CURRENCY,
+                                symbol: CONFIG.CURRENCY,
+                                decimals: 18
+                            },
+                            rpcUrls: [CONFIG.RPC_URL],
+                            blockExplorerUrls: [CONFIG.BLOCKSCOUT_URL]
+                        }]
+                    });
+                } catch (error) {
+                    console.error('Error adding network:', error);
+                }
+            } else {
+                alert('MetaMask is not installed!');
+            }
+        }
+    </script>
+</body>
+</html>
