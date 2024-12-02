@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.coingecko.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;">
     <title>Defi Oracle Meta Address Checker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         .result-card {
             margin-top: 20px;
@@ -27,12 +29,34 @@
         .copy-btn:hover {
             color: #0d6efd;
         }
+        .error-message {
+            display: none;
+            color: #dc3545;
+            margin-top: 1rem;
+        }
+        .wallet-btn {
+            min-width: 160px;
+            text-align: center;
+        }
+        .network-badge {
+            font-size: 0.8em;
+            margin-left: 0.5em;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
             <span class="navbar-brand mb-0 h1">Defi Oracle Meta Address Checker</span>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-success me-3" id="networkStatus">Connected</span>
+                <button id="walletButton" class="btn btn-outline-light wallet-btn me-2">
+                    Connect Wallet
+                </button>
+                <button id="addNetworkButton" class="btn btn-primary wallet-btn" style="display: none;">
+                    Add Network
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -47,15 +71,20 @@
                                 <label for="address" class="form-label">Ethereum Address</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="address" required
-                                        placeholder="0x... or IBAN">
+                                        placeholder="0x... or IBAN" pattern="^(0x[a-fA-F0-9]{40}|XE[0-9]{2}[a-zA-Z0-9]{30,31})$">
                                     <button class="btn btn-outline-secondary" type="button" id="pasteBtn">
                                         <i class="bi bi-clipboard"></i> Paste
                                     </button>
                                 </div>
-                                <div class="form-text">Enter an Ethereum address or IBAN format</div>
+                                <div class="form-text">Enter an Ethereum address (0x...) or IBAN format (XE...)</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Check Address</button>
                         </form>
+
+                        <div id="errorMessage" class="error-message">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span id="errorText"></span>
+                        </div>
 
                         <div id="loading" class="loading mt-3">
                             <div class="d-flex align-items-center">
@@ -75,14 +104,14 @@
                                         <div class="col-3">ETH Address:</div>
                                         <div class="col-9">
                                             <span id="ethAddress"></span>
-                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ethAddress"></i>
+                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ethAddress" title="Copy to clipboard"></i>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-3">IBAN:</div>
                                         <div class="col-9">
                                             <span id="ibanAddress"></span>
-                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ibanAddress"></i>
+                                            <i class="bi bi-clipboard copy-btn ms-2" data-copy="ibanAddress" title="Copy to clipboard"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -109,8 +138,8 @@
                                             <div id="txCount" class="currency-value"></div>
                                         </div>
                                         <div class="col-6">
-                                            <div>Last Transaction:</div>
-                                            <div id="lastTx" class="secondary-value"></div>
+                                            <div>Last Block:</div>
+                                            <div id="lastBlock" class="secondary-value"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -131,6 +160,14 @@
                                         <div class="col-3">Gas Price:</div>
                                         <div class="col-9" id="gasPrice"></div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">Explorer:</div>
+                                        <div class="col-9">
+                                            <a id="explorerLink" href="#" target="_blank" rel="noopener noreferrer">
+                                                View on Blockscout <i class="bi bi-box-arrow-up-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -142,17 +179,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"></script>
     
     <script>
         const CONFIG = {
             NETWORK_NAME: 'Defi Oracle Meta Mainnet',
             CHAIN_ID: 138,
-            RPC_URL: 'http://102.133.148.122:8545'
+            RPC_URL: 'http://102.133.148.122:8545',
+            EXPLORER_URL: 'http://102.133.148.122:26000'
         };
 
         // Initialize Web3
         const web3 = new Web3(CONFIG.RPC_URL);
+
+        // Check network connection
+        async function checkConnection() {
+            try {
+                await web3.eth.net.isListening();
+                document.getElementById('networkStatus').textContent = 'Connected';
+                document.getElementById('networkStatus').className = 'badge bg-success';
+            } catch (error) {
+                document.getElementById('networkStatus').textContent = 'Disconnected';
+                document.getElementById('networkStatus').className = 'badge bg-danger';
+            }
+        }
+
+        // Check connection every 30 seconds
+        setInterval(checkConnection, 30000);
+        checkConnection();
 
         // Helper function to format currency
         function formatCurrency(value, decimals = 4) {
@@ -162,13 +215,30 @@
             }).format(value);
         }
 
+        // Helper function to format timestamp
+        function formatTimestamp(timestamp) {
+            return new Date(timestamp * 1000).toLocaleString();
+        }
+
+        // Helper function to show error
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
         // Helper function to copy to clipboard
         async function copyToClipboard(text) {
             try {
                 await navigator.clipboard.writeText(text);
-                alert('Copied to clipboard!');
+                showError('Copied to clipboard!');
             } catch (err) {
                 console.error('Failed to copy:', err);
+                showError('Failed to copy to clipboard');
             }
         }
 
@@ -179,6 +249,7 @@
                 document.getElementById('address').value = text;
             } catch (err) {
                 console.error('Failed to paste:', err);
+                showError('Failed to paste from clipboard');
             }
         });
 
@@ -206,6 +277,11 @@
             try {
                 let ethAddress = address;
                 
+                // Validate address format
+                if (!web3.utils.isAddress(ethAddress) && !address.startsWith('XE')) {
+                    throw new Error('Invalid address format');
+                }
+                
                 // Convert IBAN to ETH address if needed
                 if (address.startsWith('XE')) {
                     ethAddress = web3.eth.Iban.toAddress(address);
@@ -229,6 +305,9 @@
                 const gasPrice = await web3.eth.getGasPrice();
                 const gasPriceGwei = web3.utils.fromWei(gasPrice, 'gwei');
 
+                // Get latest block
+                const latestBlock = await web3.eth.getBlock('latest');
+
                 // Update UI
                 document.getElementById('ethAddress').textContent = ethAddress;
                 document.getElementById('ibanAddress').textContent = iban.toString();
@@ -237,14 +316,19 @@
                     document.getElementById('usdBalance').textContent = `($${formatCurrency(balanceInUsd, 2)} USD)`;
                 }
                 document.getElementById('txCount').textContent = txCount;
+                document.getElementById('lastBlock').textContent = formatTimestamp(latestBlock.timestamp);
                 document.getElementById('network').textContent = CONFIG.NETWORK_NAME;
                 document.getElementById('chainId').textContent = CONFIG.CHAIN_ID;
                 document.getElementById('gasPrice').textContent = `${formatCurrency(gasPriceGwei)} Gwei`;
                 
+                // Update explorer link
+                const explorerLink = document.getElementById('explorerLink');
+                explorerLink.href = `${CONFIG.EXPLORER_URL}/address/${ethAddress}`;
+                
                 return true;
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error checking address: ' + error.message);
+                showError(error.message);
                 return false;
             }
         }
@@ -255,17 +339,117 @@
             const address = document.getElementById('address').value;
             const loading = document.getElementById('loading');
             const result = document.getElementById('result');
+            const errorMessage = document.getElementById('errorMessage');
             
+            // Reset UI
             loading.style.display = 'block';
             result.style.display = 'none';
+            errorMessage.style.display = 'none';
             
+            // Check address
             const success = await checkAddress(address);
             
+            // Update UI
             loading.style.display = 'none';
             if (success) {
                 result.style.display = 'block';
             }
         });
+
+        // Web3 wallet connection
+        let userAddress = null;
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                showError('Please install MetaMask or another Web3 wallet');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                userAddress = accounts[0];
+                updateWalletButton();
+                checkNetwork();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                showError('Failed to connect wallet');
+            }
+        }
+
+        async function addNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: `0x${CONFIG.CHAIN_ID.toString(16)}`,
+                        chainName: CONFIG.NETWORK_NAME,
+                        nativeCurrency: {
+                            name: 'ETH',
+                            symbol: 'ETH',
+                            decimals: 18
+                        },
+                        rpcUrls: [CONFIG.RPC_URL],
+                        blockExplorerUrls: [CONFIG.EXPLORER_URL]
+                    }]
+                });
+            } catch (error) {
+                console.error('Error adding network:', error);
+                showError('Failed to add network to wallet');
+            }
+        }
+
+        function updateWalletButton() {
+            const walletBtn = document.getElementById('walletButton');
+            const addNetworkBtn = document.getElementById('addNetworkButton');
+            
+            if (userAddress) {
+                walletBtn.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                walletBtn.classList.remove('btn-outline-light');
+                walletBtn.classList.add('btn-success');
+                addNetworkBtn.style.display = 'block';
+            } else {
+                walletBtn.textContent = 'Connect Wallet';
+                walletBtn.classList.add('btn-outline-light');
+                walletBtn.classList.remove('btn-success');
+                addNetworkBtn.style.display = 'none';
+            }
+        }
+
+        async function checkNetwork() {
+            if (!window.ethereum) return;
+            
+            try {
+                const chainId = await window.ethereum.request({ 
+                    method: 'eth_chainId' 
+                });
+                const currentChainId = parseInt(chainId, 16);
+                
+                if (currentChainId === CONFIG.CHAIN_ID) {
+                    document.getElementById('addNetworkButton').textContent = 'Network Added ✓';
+                    document.getElementById('addNetworkButton').disabled = true;
+                }
+            } catch (error) {
+                console.error('Error checking network:', error);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('walletButton').addEventListener('click', connectWallet);
+        document.getElementById('addNetworkButton').addEventListener('click', addNetwork);
+
+        // Listen for account changes
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', function (accounts) {
+                userAddress = accounts[0] || null;
+                updateWalletButton();
+            });
+
+            window.ethereum.on('chainChanged', function (chainId) {
+                checkNetwork();
+            });
+        }
     </script>
 </body>
 </html> 

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .account-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .account-card:hover {
+            transform: translateY(-2px);
+        }
+        .currency-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Accounts</h2>
+                <button class="btn btn-primary" onclick="showModal('addAccount')">
+                    <i class="bi bi-plus-lg"></i> Add Account
+                </button>
+            </div>
+
+            <!-- Account Types -->
+            <ul class="nav nav-pills mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-type="all">All Accounts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-type="fiat">Fiat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-type="crypto">Crypto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-type="savings">Savings</a>
+                </li>
+            </ul>
+
+            <!-- Fiat Accounts -->
+            <h5 class="mb-3">Fiat Accounts</h5>
+            <div class="row" id="fiatAccounts">
+                <!-- Example Fiat Account Card -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card account-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="currency-icon">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">USD Account</h6>
+                                    <small class="text-muted">Main Account</small>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">$0.00</h5>
+                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crypto Accounts -->
+            <h5 class="mb-3 mt-4">Crypto Accounts</h5>
+            <div class="row" id="cryptoAccounts">
+                <!-- Example Crypto Account Card -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card account-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="currency-icon">
+                                    <i class="bi bi-currency-bitcoin"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">ETH Wallet</h6>
+                                    <small class="text-muted">Main Wallet</small>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">0.00 ETH</h5>
+                                    <small class="text-muted">$0.00</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Accounts -->
+            <h5 class="mb-3 mt-4">Savings Accounts</h5>
+            <div class="row" id="savingsAccounts">
+                <!-- Example Savings Account Card -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card account-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="currency-icon">
+                                    <i class="bi bi-piggy-bank"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Savings Account</h6>
+                                    <small class="text-muted">4.5% APY</small>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">$0.00</h5>
+                                    <small class="text-success">+$0.00 Interest</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div class="modal fade" id="addAccountModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAccountForm">
+                        <div class="mb-3">
+                            <label class="form-label">Account Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select Account Type</option>
+                                <option value="fiat">Fiat Account</option>
+                                <option value="crypto">Crypto Wallet</option>
+                                <option value="savings">Savings Account</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Currency</label>
+                            <select class="form-select" required>
+                                <option value="">Select Currency</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="ETH">ETH</option>
+                                <option value="BTC">BTC</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Account Name</label>
+                            <input type="text" class="form-control" placeholder="e.g., Main Account">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show modal function
+        function showModal(action) {
+            const modal = new bootstrap.Modal(document.getElementById('addAccountModal'));
+            modal.show();
+        }
+
+        // Filter accounts
+        document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Remove active class from all links
+                document.querySelectorAll('.nav-pills .nav-link').forEach(l => {
+                    l.classList.remove('active');
+                });
+                // Add active class to clicked link
+                e.target.classList.add('active');
+                // Filter accounts based on type
+                const type = e.target.dataset.type;
+                // Add filtering logic here
+            });
+        });
+
+        // Add account form submission
+        document.getElementById('addAccountForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add account creation logic here
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAccountModal'));
+            modal.hide();
+        });
+    </script>
+</body>
+</html> 

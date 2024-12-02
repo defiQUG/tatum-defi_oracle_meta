@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defi Oracle Meta - Banking Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+        }
+        .balance-card {
+            background: linear-gradient(45deg, #3772ff, #3d17e6);
+            color: white;
+        }
+        .transaction-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .quick-action {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 1rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quick-action:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary">
+            <img src="logo.png" alt="Logo" class="me-2" style="width: 40px;">
+            <h4 class="mb-0">Defi Oracle Meta</h4>
+        </div>
+        
+        <div class="mb-4">
+            <div id="walletStatus" class="d-flex align-items-center mb-3">
+                <button id="connectWallet" class="btn btn-outline-light w-100">
+                    Connect Wallet
+                </button>
+            </div>
+            <div id="networkStatus" style="display: none;">
+                <button id="addNetwork" class="btn btn-primary w-100">
+                    Add Network
+                </button>
+            </div>
+        </div>
+
+        <nav class="nav flex-column">
+            <a href="#" class="nav-link active">
+                <i class="bi bi-grid me-2"></i> Dashboard
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-wallet2 me-2"></i> Accounts
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-arrow-left-right me-2"></i> Transfers
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-credit-card me-2"></i> Cards
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-graph-up me-2"></i> Investments
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-shield-check me-2"></i> Security
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-gear me-2"></i> Settings
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Dashboard</h2>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-bell"></i>
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="quick-action" onclick="showModal('send')">
+                        <i class="bi bi-send h3"></i>
+                        <div>Send</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action" onclick="showModal('receive')">
+                        <i class="bi bi-download h3"></i>
+                        <div>Receive</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action" onclick="showModal('swap')">
+                        <i class="bi bi-arrow-left-right h3"></i>
+                        <div>Swap</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="quick-action" onclick="showModal('buy')">
+                        <i class="bi bi-plus-circle h3"></i>
+                        <div>Buy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balances -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card balance-card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-light">Total Balance</h6>
+                            <h2 class="card-title mb-4">$0.00</h2>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small>Fiat Balance</small>
+                                    <div>$0.00</div>
+                                </div>
+                                <div>
+                                    <small>Crypto Balance</small>
+                                    <div>$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Portfolio Distribution</h5>
+                            <div class="chart-container" id="portfolioChart">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Recent Transactions</h5>
+                        <button class="btn btn-outline-primary btn-sm">View All</button>
+                    </div>
+                    <div class="transaction-list">
+                        <!-- Transactions will be populated here -->
+                        <div class="text-center text-muted py-5">
+                            No transactions yet
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="actionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Modal content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    
+    <script>
+        // Initialize Web3
+        let web3;
+        let userAddress;
+        const CONFIG = {
+            NETWORK_NAME: 'Defi Oracle Meta Mainnet',
+            CHAIN_ID: 138,
+            RPC_URL: 'http://102.133.148.122:8545',
+            EXPLORER_URL: 'http://102.133.148.122:26000'
+        };
+
+        // Connect wallet function
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask or another Web3 wallet');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                userAddress = accounts[0];
+                web3 = new Web3(window.ethereum);
+                updateWalletStatus();
+                checkNetwork();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet');
+            }
+        }
+
+        // Add network function
+        async function addNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: `0x${CONFIG.CHAIN_ID.toString(16)}`,
+                        chainName: CONFIG.NETWORK_NAME,
+                        nativeCurrency: {
+                            name: 'ETH',
+                            symbol: 'ETH',
+                            decimals: 18
+                        },
+                        rpcUrls: [CONFIG.RPC_URL],
+                        blockExplorerUrls: [CONFIG.EXPLORER_URL]
+                    }]
+                });
+            } catch (error) {
+                console.error('Error adding network:', error);
+                alert('Failed to add network to wallet');
+            }
+        }
+
+        // Update wallet status UI
+        function updateWalletStatus() {
+            const connectBtn = document.getElementById('connectWallet');
+            const networkDiv = document.getElementById('networkStatus');
+            
+            if (userAddress) {
+                connectBtn.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                connectBtn.classList.remove('btn-outline-light');
+                connectBtn.classList.add('btn-success');
+                networkDiv.style.display = 'block';
+            } else {
+                connectBtn.textContent = 'Connect Wallet';
+                connectBtn.classList.add('btn-outline-light');
+                connectBtn.classList.remove('btn-success');
+                networkDiv.style.display = 'none';
+            }
+        }
+
+        // Check network status
+        async function checkNetwork() {
+            if (!window.ethereum) return;
+            
+            try {
+                const chainId = await window.ethereum.request({ 
+                    method: 'eth_chainId' 
+                });
+                const currentChainId = parseInt(chainId, 16);
+                
+                if (currentChainId === CONFIG.CHAIN_ID) {
+                    document.getElementById('addNetwork').textContent = 'Network Added ✓';
+                    document.getElementById('addNetwork').disabled = true;
+                }
+            } catch (error) {
+                console.error('Error checking network:', error);
+            }
+        }
+
+        // Show modal function
+        function showModal(action) {
+            const modal = new bootstrap.Modal(document.getElementById('actionModal'));
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+
+            // Set modal content based on action
+            switch(action) {
+                case 'send':
+                    title.textContent = 'Send Funds';
+                    content.innerHTML = `
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Recipient Address</label>
+                                <input type="text" class="form-control" placeholder="0x... or IBAN">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" class="form-control" placeholder="0.00">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </form>
+                    `;
+                    break;
+                // Add other cases for receive, swap, buy
+            }
+
+            modal.show();
+        }
+
+        // Event listeners
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('addNetwork').addEventListener('click', addNetwork);
+
+        // Initialize portfolio chart
+        const ctx = document.createElement('canvas');
+        document.getElementById('portfolioChart').appendChild(ctx);
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fiat', 'Crypto'],
+                datasets: [{
+                    data: [0, 0],
+                    backgroundColor: ['#3772ff', '#3d17e6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Listen for account changes
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', function (accounts) {
+                userAddress = accounts[0] || null;
+                updateWalletStatus();
+            });
+
+            window.ethereum.on('chainChanged', function (chainId) {
+                checkNetwork();
+            });
+        }
+    </script>
+</body>
+</html> 

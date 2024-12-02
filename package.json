@@ -7,7 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "snyk": "snyk test"
+    "lint": "eslint src/",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "protect": "snyk-protect",
+    "prepare": "snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -28,18 +31,26 @@
   },
   "homepage": "https://github.com/Defi-Oracle-Meta-Blockchain/tatum-defi_oracle_meta#readme",
   "dependencies": {
-    "@tatumio/tatum": "^3.1.5",
+    "@snyk/protect": "^1.1294.2",
+    "@tatumio/tatum": "^3.1.8",
+    "cookie-parser": "^1.4.7",
     "dotenv": "16.3.1",
-    "express": "^4.18.2",
+    "express": "^4.21.1",
+    "express-csrf-double-submit-cookie": "^1.1.0",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^7.2.0",
     "node-fetch": "^3.3.2",
-    "web3": "^1.5.2"
+    "web3": "^1.10.4"
   },
   "devDependencies": {
-    "snyk": "^1.1250.0"
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "jest": "^29.7.0"
   },
   "packageManager": "pnpm@8.15.1",
   "engines": {
     "node": ">=18",
     "pnpm": ">=8.15.1"
-  }
-} 
+  },
+  "snyk": true
+}

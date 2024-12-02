@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfers - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .transfer-type {
+            cursor: pointer;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .transfer-type:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .transfer-type i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .transaction-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Transfers</h2>
+                <div>
+                    <button class="btn btn-outline-primary me-2" onclick="showModal('schedule')">
+                        <i class="bi bi-calendar-plus"></i> Schedule Transfer
+                    </button>
+                    <button class="btn btn-primary" onclick="showModal('newTransfer')">
+                        <i class="bi bi-send"></i> New Transfer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transfer Types -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="transfer-type" onclick="showModal('domestic')">
+                        <i class="bi bi-house text-primary"></i>
+                        <h5>Domestic Transfer</h5>
+                        <p class="text-muted mb-0">Send money within your country</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="transfer-type" onclick="showModal('international')">
+                        <i class="bi bi-globe text-success"></i>
+                        <h5>International Transfer</h5>
+                        <p class="text-muted mb-0">Send money abroad via SWIFT/SEPA</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="transfer-type" onclick="showModal('crypto')">
+                        <i class="bi bi-currency-bitcoin text-warning"></i>
+                        <h5>Crypto Transfer</h5>
+                        <p class="text-muted mb-0">Send cryptocurrencies</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="transfer-type" onclick="showModal('internal')">
+                        <i class="bi bi-arrow-left-right text-info"></i>
+                        <h5>Internal Transfer</h5>
+                        <p class="text-muted mb-0">Between your accounts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transfers -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Recent Transfers</h5>
+                    <div class="transaction-history">
+                        <div class="list-group">
+                            <!-- Example transfers -->
+                            <div class="list-group-item border-0 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Domestic Transfer</h6>
+                                        <small class="text-muted">To: John Doe • Bank: Chase</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 text-danger">-$1,000.00</h6>
+                                        <small class="text-muted">2023-12-20 14:30</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Crypto Transfer</h6>
+                                        <small class="text-muted">To: 0x1234...5678</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 text-danger">-0.5 ETH</h6>
+                                        <small class="text-muted">2023-12-19 09:15</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scheduled Transfers -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Scheduled Transfers</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Recipient</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-01-01</td>
+                                    <td>Recurring Payment</td>
+                                    <td>Utility Company</td>
+                                    <td>$150.00</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div class="modal fade" id="transferModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">New Transfer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transferForm">
+                        <div class="mb-3">
+                            <label class="form-label">Transfer Type</label>
+                            <select class="form-select" required id="transferType">
+                                <option value="">Select Transfer Type</option>
+                                <option value="domestic">Domestic Transfer</option>
+                                <option value="international">International Transfer</option>
+                                <option value="crypto">Crypto Transfer</option>
+                                <option value="internal">Internal Transfer</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic form fields will be inserted here -->
+                        <div id="dynamicFields"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="currencySymbol">$</span>
+                                <input type="number" class="form-control" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" placeholder="Optional">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Send Transfer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    
+    <script>
+        // Show modal function
+        function showModal(type) {
+            const modal = new bootstrap.Modal(document.getElementById('transferModal'));
+            const title = document.getElementById('modalTitle');
+            const dynamicFields = document.getElementById('dynamicFields');
+            const transferType = document.getElementById('transferType');
+
+            // Set modal title and pre-select transfer type
+            title.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Transfer';
+            transferType.value = type;
+
+            // Update dynamic fields based on transfer type
+            updateDynamicFields(type);
+
+            modal.show();
+        }
+
+        // Update dynamic form fields based on transfer type
+        function updateDynamicFields(type) {
+            const dynamicFields = document.getElementById('dynamicFields');
+            const currencySymbol = document.getElementById('currencySymbol');
+
+            let fields = '';
+            switch(type) {
+                case 'domestic':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bank Account Number</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Routing Number</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    `;
+                    currencySymbol.textContent = '$';
+                    break;
+
+                case 'international':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">IBAN</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SWIFT/BIC</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Country</label>
+                            <select class="form-select" required>
+                                <option value="">Select Country</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="EU">European Union</option>
+                                <option value="CA">Canada</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = '€';
+                    break;
+
+                case 'crypto':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Address</label>
+                            <input type="text" class="form-control" placeholder="0x..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Network</label>
+                            <select class="form-select" required>
+                                <option value="">Select Network</option>
+                                <option value="ETH">Ethereum</option>
+                                <option value="BSC">Binance Smart Chain</option>
+                                <option value="MATIC">Polygon</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = 'ETH';
+                    break;
+
+                case 'internal':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">From Account</label>
+                            <select class="form-select" required>
+                                <option value="">Select Source Account</option>
+                                <option value="main">Main Account (USD)</option>
+                                <option value="savings">Savings Account (USD)</option>
+                                <option value="crypto">Crypto Wallet (ETH)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">To Account</label>
+                            <select class="form-select" required>
+                                <option value="">Select Destination Account</option>
+                                <option value="main">Main Account (USD)</option>
+                                <option value="savings">Savings Account (USD)</option>
+                                <option value="crypto">Crypto Wallet (ETH)</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = '$';
+                    break;
+            }
+            dynamicFields.innerHTML = fields;
+        }
+
+        // Handle transfer form submission
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Add transfer processing logic here
+            // For crypto transfers, integrate with Web3
+            const type = document.getElementById('transferType').value;
+            if (type === 'crypto') {
+                // Implement Web3 transfer logic
+            }
+
+            // Close modal after successful transfer
+            const modal = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
+            modal.hide();
+        });
+
+        // Listen for transfer type changes
+        document.getElementById('transferType').addEventListener('change', (e) => {
+            updateDynamicFields(e.target.value);
+        });
+    </script>
+</body>
+</html> 

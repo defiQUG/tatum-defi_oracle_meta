@@ -30,3 +30,8 @@ pids
 # OS
 .DS_Store
 Thumbs.db
+
+# Snyk
+.snyk-history
+.dccache
+.snyk-cache
