@@ -4,13 +4,13 @@
   "description": "DeFi Oracle Meta - Secure Web3 Banking Portal",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "jest --coverage",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "prepare": "husky install",
-    "audit": "npm audit"
+    "start": "pnpm node src/index.js",
+    "dev": "pnpm nodemon src/index.js",
+    "test": "pnpm jest --coverage",
+    "lint": "pnpm eslint .",
+    "format": "pnpm prettier --write .",
+    "prepare": "pnpm husky install",
+    "audit": "pnpm audit"
   },
   "dependencies": {
     "@tatumio/tatum": "^4.1.15",

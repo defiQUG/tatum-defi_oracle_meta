@@ -16,6 +16,16 @@ const cacheService = require('./services/cacheService');
 const queueService = require('./services/queueService');
 const monitoringService = require('./services/monitoringService');
 
+// Suppress punycode deprecation warning
+process.removeAllListeners('warning');
+process.on('warning', (warning) => {
+    if (warning.name === 'DeprecationWarning' && 
+        warning.message.includes('The `punycode` module is deprecated')) {
+        return;
+    }
+    console.warn(warning);
+});
+
 // Create Express app and HTTP server
 const app = express();
 const server = createServer(app);
