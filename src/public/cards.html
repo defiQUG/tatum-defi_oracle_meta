@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cards - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .virtual-card {
+            background: linear-gradient(45deg, #1a1f36, #3772ff);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        .virtual-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M0 0h200v200H0z" fill="none"/><path d="M0 0h200v200H0z" fill="rgba(255,255,255,0.05)"/></svg>');
+            opacity: 0.1;
+        }
+        .card-number {
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(45deg, #cca354, #e6c171);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Virtual Cards</h2>
+                <button class="btn btn-primary" onclick="showModal('newCard')">
+                    <i class="bi bi-plus-lg"></i> New Card
+                </button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="row mb-4">
+                <!-- Example Virtual Card -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="virtual-card mb-4">
+                        <div class="d-flex justify-content-between mb-4">
+                            <div class="card-chip"></div>
+                            <i class="bi bi-wifi-2 h3"></i>
+                        </div>
+                        <div class="card-number mb-3">**** **** **** 1234</div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <small class="d-block mb-1">CARD HOLDER</small>
+                                <div>JOHN DOE</div>
+                            </div>
+                            <div class="text-end">
+                                <small class="d-block mb-1">EXPIRES</small>
+                                <div>12/25</div>
+                            </div>
+                        </div>
+                        <div class="position-absolute top-0 end-0 p-3">
+                            <div class="dropdown">
+                                <button class="btn text-white" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="showCardDetails()">View Details</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="toggleCard(true)">Freeze Card</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="showModal('setLimits')">Set Limits</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteCard()">Delete Card</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Activity -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Recent Card Activity</h5>
+                    <div class="transaction-list">
+                        <div class="list-group">
+                            <!-- Example transactions -->
+                            <div class="list-group-item border-0 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Amazon.com</h6>
+                                        <small class="text-muted">Online Purchase</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 text-danger">-$29.99</h6>
+                                        <small class="text-muted">2023-12-20 14:30</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Starbucks</h6>
+                                        <small class="text-muted">Retail Purchase</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 text-danger">-$5.75</h6>
+                                        <small class="text-muted">2023-12-19 09:15</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Limits -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Card Limits & Settings</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label">Daily Spending Limit</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" value="1000">
+                                    <button class="btn btn-outline-primary">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label">Monthly Spending Limit</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" value="5000">
+                                    <button class="btn btn-outline-primary">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Online Purchases</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">ATM Withdrawals</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">International Transactions</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Contactless Payments</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Card Modal -->
+    <div class="modal fade" id="newCardModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Virtual Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCardForm">
+                        <div class="mb-3">
+                            <label class="form-label">Card Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select Card Type</option>
+                                <option value="debit">Virtual Debit Card</option>
+                                <option value="credit">Virtual Credit Card</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Currency</label>
+                            <select class="form-select" required>
+                                <option value="">Select Currency</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Funding Source</label>
+                            <select class="form-select" required>
+                                <option value="">Select Funding Source</option>
+                                <option value="fiat">Main Account (USD)</option>
+                                <option value="crypto">Crypto Wallet (ETH)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Daily Limit</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Card</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show modal function
+        function showModal(type) {
+            const modal = new bootstrap.Modal(document.getElementById('newCardModal'));
+            modal.show();
+        }
+
+        // Show card details
+        function showCardDetails() {
+            // Implement card details view
+        }
+
+        // Toggle card status
+        function toggleCard(freeze) {
+            // Implement card freeze/unfreeze
+        }
+
+        // Delete card
+        function deleteCard() {
+            if (confirm('Are you sure you want to delete this card?')) {
+                // Implement card deletion
+            }
+        }
+
+        // Handle new card form submission
+        document.getElementById('newCardForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add card creation logic here
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newCardModal'));
+            modal.hide();
+        });
+    </script>
+</body>
+</html> 
