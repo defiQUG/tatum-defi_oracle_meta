@@ -7,11 +7,43 @@
     "start": "pnpm node src/index.js",
     "dev": "pnpm nodemon src/index.js",
     "test": "pnpm jest --coverage",
+    "test:watch": "pnpm jest --watch",
+    "test:e2e": "pnpm jest --config jest.e2e.config.js",
     "lint": "pnpm eslint .",
+    "lint:fix": "pnpm eslint . --fix",
     "format": "pnpm prettier --write .",
+    "format:check": "pnpm prettier --check .",
     "prepare": "husky install",
-    "audit": "pnpm audit"
+    "audit": "pnpm audit",
+    "clean": "rm -rf node_modules pnpm-lock.yaml",
+    "reinstall": "pnpm clean && pnpm install",
+    "build": "pnpm tsc",
+    "build:watch": "pnpm tsc --watch",
+    "docker:build": "docker build -t defi-oracle-meta .",
+    "docker:run": "docker run -p 3000:3000 defi-oracle-meta",
+    "db:migrate": "pnpm mongoose-migrate up",
+    "db:rollback": "pnpm mongoose-migrate down",
+    "docs": "pnpm typedoc",
+    "precommit": "pnpm lint-staged"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/defiQUG/tatum-defi_oracle_meta.git"
+  },
+  "keywords": [
+    "defi",
+    "oracle",
+    "blockchain",
+    "web3",
+    "tatum",
+    "ethereum"
+  ],
+  "author": "DeFi Oracle Meta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/defiQUG/tatum-defi_oracle_meta/issues"
+  },
+  "homepage": "https://github.com/defiQUG/tatum-defi_oracle_meta#readme",
   "dependencies": {
     "@tatumio/tatum": "^4.2.43",
     "ajv": "8.17.1",
@@ -51,7 +83,8 @@
     "supertest": "^7.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
   "lint-staged": {
     "*.js": "eslint --fix",
