@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Settings - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .security-status {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .security-status.high {
+            background: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+        .security-status.medium {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        .security-status.low {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #f8f9fa;
+            margin: 1rem auto;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Security Settings</h2>
+                <button class="btn btn-primary" onclick="showModal('securityAudit')">
+                    <i class="bi bi-shield-check"></i> Security Audit
+                </button>
+            </div>
+
+            <!-- Security Status -->
+            <div class="security-status medium mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-exclamation h1 mb-0 me-3"></i>
+                    <div>
+                        <h5 class="mb-1">Security Status: Medium</h5>
+                        <p class="mb-0">Enable 2FA and set up a recovery email to improve your security.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two-Factor Authentication -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Two-Factor Authentication (2FA)</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="enable2FA">
+                                    <label class="form-check-label" for="enable2FA">Enable 2FA</label>
+                                </div>
+                                <p class="text-muted">Secure your account with an additional layer of protection.</p>
+                            </div>
+                            <div id="setup2FA" style="display: none;">
+                                <div class="qr-code">
+                                    <!-- QR Code will be generated here -->
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Verification Code</label>
+                                    <input type="text" class="form-control" placeholder="Enter code from authenticator app">
+                                </div>
+                                <button class="btn btn-primary">Verify and Enable</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Recovery Codes</h6>
+                            <p class="text-muted">Save these codes in a secure place. You can use them to access your account if you lose your 2FA device.</p>
+                            <div class="bg-light p-3 rounded">
+                                <code>XXXX-XXXX-XXXX</code>
+                            </div>
+                            <button class="btn btn-outline-primary mt-3">Generate New Codes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Security -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Login Security</h5>
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" value="••••••••••••">
+                            <button class="btn btn-outline-primary">Change</button>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Recovery Email</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Enter recovery email">
+                            <button class="btn btn-outline-primary">Verify</button>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label">Email notifications for new login attempts</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Management -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Device Management</h5>
+                    <div class="list-group">
+                        <div class="list-group-item border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Chrome on Windows</h6>
+                                    <small class="text-muted">Last active: 2 minutes ago</small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success me-2">Current Device</span>
+                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Safari on iPhone</h6>
+                                    <small class="text-muted">Last active: 2 days ago</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Security Activity Log</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Location</th>
+                                    <th>IP Address</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-12-20 14:30</td>
+                                    <td>Login Attempt</td>
+                                    <td>New York, US</td>
+                                    <td>192.168.1.1</td>
+                                    <td><span class="badge bg-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-12-19 09:15</td>
+                                    <td>Password Change</td>
+                                    <td>London, UK</td>
+                                    <td>192.168.1.2</td>
+                                    <td><span class="badge bg-danger">Failed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Audit Modal -->
+    <div class="modal fade" id="securityAuditModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Security Audit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Two-Factor Authentication</h6>
+                                    <small class="text-muted">Protect your account with 2FA</small>
+                                </div>
+                                <span class="badge bg-danger">Not Enabled</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Recovery Email</h6>
+                                    <small class="text-muted">Set up account recovery options</small>
+                                </div>
+                                <span class="badge bg-warning">Pending</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Password Strength</h6>
+                                    <small class="text-muted">Use a strong, unique password</small>
+                                </div>
+                                <span class="badge bg-success">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Fix Issues</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show modal function
+        function showModal(type) {
+            const modal = new bootstrap.Modal(document.getElementById('securityAuditModal'));
+            modal.show();
+        }
+
+        // Toggle 2FA setup
+        document.getElementById('enable2FA').addEventListener('change', function(e) {
+            const setup2FA = document.getElementById('setup2FA');
+            setup2FA.style.display = e.target.checked ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html> 

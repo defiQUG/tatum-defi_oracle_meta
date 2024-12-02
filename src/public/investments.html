@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investments - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .investment-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .investment-card:hover {
+            transform: translateY(-2px);
+        }
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+        .apy-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(25, 135, 84, 0.1);
+            color: #198754;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Investments</h2>
+                <button class="btn btn-primary" onclick="showModal('newInvestment')">
+                    <i class="bi bi-plus-lg"></i> New Investment
+                </button>
+            </div>
+
+            <!-- Investment Overview -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Total Invested</h6>
+                            <h3 class="card-title mb-0">$0.00</h3>
+                            <small class="text-success">+0.00% (24h)</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Total Earnings</h6>
+                            <h3 class="card-title mb-0">$0.00</h3>
+                            <small class="text-success">+$0.00 This Month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Average APY</h6>
+                            <h3 class="card-title mb-0">0.00%</h3>
+                            <small class="text-muted">Across All Investments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Performance Chart -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Investment Performance</h5>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-secondary active">1D</button>
+                            <button class="btn btn-outline-secondary">1W</button>
+                            <button class="btn btn-outline-secondary">1M</button>
+                            <button class="btn btn-outline-secondary">1Y</button>
+                            <button class="btn btn-outline-secondary">All</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="performanceChart">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Opportunities -->
+            <h5 class="mb-3">Investment Opportunities</h5>
+            <div class="row mb-4">
+                <!-- Staking Pool Card -->
+                <div class="col-md-4">
+                    <div class="card investment-card">
+                        <div class="card-body">
+                            <div class="apy-badge">4.5% APY</div>
+                            <h5 class="card-title">ETH Staking Pool</h5>
+                            <p class="card-text text-muted">Stake ETH and earn rewards</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <small class="text-muted d-block">Min. Stake</small>
+                                    <div>0.1 ETH</div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Total Staked</small>
+                                    <div>1,234 ETH</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="showModal('stake')">Stake Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yield Farming Card -->
+                <div class="col-md-4">
+                    <div class="card investment-card">
+                        <div class="card-body">
+                            <div class="apy-badge">12.8% APY</div>
+                            <h5 class="card-title">USDC-ETH LP Farm</h5>
+                            <p class="card-text text-muted">Provide liquidity and earn rewards</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <small class="text-muted d-block">Min. Deposit</small>
+                                    <div>$100</div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">TVL</small>
+                                    <div>$2.5M</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="showModal('farm')">Farm Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed Deposit Card -->
+                <div class="col-md-4">
+                    <div class="card investment-card">
+                        <div class="card-body">
+                            <div class="apy-badge">8.5% APY</div>
+                            <h5 class="card-title">USDT Fixed Deposit</h5>
+                            <p class="card-text text-muted">Lock USDT for fixed returns</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <small class="text-muted d-block">Lock Period</small>
+                                    <div>90 Days</div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Available</small>
+                                    <div>$500K</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="showModal('deposit')">Deposit Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Investments -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Active Investments</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>APY</th>
+                                    <th>Duration</th>
+                                    <th>Earnings</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ETH Staking</td>
+                                    <td>0.5 ETH</td>
+                                    <td>4.5%</td>
+                                    <td>30 days</td>
+                                    <td>0.002 ETH</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">Withdraw</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment Modal -->
+    <div class="modal fade" id="investmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">New Investment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="investmentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Investment Type</label>
+                            <select class="form-select" required id="investmentType">
+                                <option value="">Select Investment Type</option>
+                                <option value="stake">Staking</option>
+                                <option value="farm">Yield Farming</option>
+                                <option value="deposit">Fixed Deposit</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic form fields will be inserted here -->
+                        <div id="dynamicFields"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="currencySymbol">$</span>
+                                <input type="number" class="form-control" placeholder="0.00" required>
+                            </div>
+                            <small class="text-muted">Available Balance: $0.00</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Duration</label>
+                            <select class="form-select" required>
+                                <option value="">Select Duration</option>
+                                <option value="30">30 Days</option>
+                                <option value="90">90 Days</option>
+                                <option value="180">180 Days</option>
+                                <option value="365">365 Days</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Confirm Investment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    
+    <script>
+        // Initialize performance chart
+        const ctx = document.createElement('canvas');
+        document.getElementById('performanceChart').appendChild(ctx);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: [0, 0, 0, 0, 0, 0],
+                    borderColor: '#3772ff',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Show modal function
+        function showModal(type) {
+            const modal = new bootstrap.Modal(document.getElementById('investmentModal'));
+            const title = document.getElementById('modalTitle');
+            const investmentType = document.getElementById('investmentType');
+
+            // Set modal title and pre-select investment type
+            title.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            investmentType.value = type;
+
+            // Update dynamic fields based on investment type
+            updateDynamicFields(type);
+
+            modal.show();
+        }
+
+        // Update dynamic form fields based on investment type
+        function updateDynamicFields(type) {
+            const dynamicFields = document.getElementById('dynamicFields');
+            const currencySymbol = document.getElementById('currencySymbol');
+
+            let fields = '';
+            switch(type) {
+                case 'stake':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Staking Pool</label>
+                            <select class="form-select" required>
+                                <option value="">Select Pool</option>
+                                <option value="eth">ETH Staking (4.5% APY)</option>
+                                <option value="dot">DOT Staking (12% APY)</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = 'ETH';
+                    break;
+
+                case 'farm':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Farming Pool</label>
+                            <select class="form-select" required>
+                                <option value="">Select Pool</option>
+                                <option value="eth-usdc">ETH-USDC (12.8% APY)</option>
+                                <option value="btc-usdt">BTC-USDT (15.2% APY)</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = '$';
+                    break;
+
+                case 'deposit':
+                    fields = `
+                        <div class="mb-3">
+                            <label class="form-label">Fixed Deposit Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select Type</option>
+                                <option value="usdt">USDT (8.5% APY)</option>
+                                <option value="usdc">USDC (8.2% APY)</option>
+                            </select>
+                        </div>
+                    `;
+                    currencySymbol.textContent = '$';
+                    break;
+            }
+            dynamicFields.innerHTML = fields;
+        }
+
+        // Handle investment form submission
+        document.getElementById('investmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Add investment processing logic here
+            // For crypto investments, integrate with Web3
+
+            // Close modal after successful investment
+            const modal = bootstrap.Modal.getInstance(document.getElementById('investmentModal'));
+            modal.hide();
+        });
+
+        // Listen for investment type changes
+        document.getElementById('investmentType').addEventListener('change', (e) => {
+            updateDynamicFields(e.target.value);
+        });
+    </script>
+</body>
+</html> 

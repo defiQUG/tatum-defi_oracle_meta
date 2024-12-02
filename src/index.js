@@ -1,4 +1,5 @@
 import express from 'express';
+import csrf from 'csurf';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { TatumSDK } from '@tatumio/tatum';
@@ -13,12 +14,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(csrf());
 const port = process.env.PORT || 3000;
 
 // Security middleware
 app.use(cookieParser());
 app.use(helmet());
-app.use(csrfSynchronisedProtection());
+app.use(csrfSynchronisedProtection({
+  cookieName: 'csrfToken',
+  ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+}));
 
 // Rate limiting
 const limiter = rateLimit({
