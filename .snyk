@@ -1,20 +1,22 @@
-# Snyk (https://snyk.io) policy file
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-WEB3-2898099:
+  'npm:node-fetch:20220206':
     - '*':
-        reason: No fix available yet, using latest web3 version compatible with our setup
+        reason: 'No direct usage of vulnerable function'
         expires: 2024-12-31T00:00:00.000Z
-  SNYK-JS-WEB3-2898100:
+  'SNYK-JS-INFLIGHT-6095116':
     - '*':
-        reason: No fix available yet, using latest web3 version compatible with our setup
+        reason: 'Indirect dependency, no direct usage'
         expires: 2024-12-31T00:00:00.000Z
 # patches apply the minimum changes required to fix a vulnerability
 patch: {}
-org: defi-oracle-meta
-integration-id: f4c5a2d2-129e-49ba-8cb3-1da1e00a7a73
-# The paths that Snyk will monitor
 exclude:
   global:
-    - node_modules
+    - node_modules/**
+    - dist/**
+    - build/**
+# The paths that Snyk should run security tests on
+test:
+  - src/**/*
