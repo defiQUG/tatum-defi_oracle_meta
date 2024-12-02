@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bills & Subscriptions - Defi Oracle Meta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Include the same base styles as dashboard.html */
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #1a1f36;
+            color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background: #3772ff;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .bill-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .bill-card:hover {
+            transform: translateY(-2px);
+        }
+        .subscription-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+        .subscription-icon.netflix {
+            background: #E50914;
+            color: white;
+        }
+        .subscription-icon.spotify {
+            background: #1DB954;
+            color: white;
+        }
+        .subscription-icon.utility {
+            background: #f8f9fa;
+            color: #1a1f36;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the same sidebar as dashboard.html -->
+    <div class="sidebar">
+        <!-- ... sidebar content ... -->
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Bills & Subscriptions</h2>
+                <div>
+                    <button class="btn btn-outline-primary me-2" onclick="showModal('schedule')">
+                        <i class="bi bi-calendar-plus"></i> Schedule Payment
+                    </button>
+                    <button class="btn btn-primary" onclick="showModal('addBill')">
+                        <i class="bi bi-plus-lg"></i> Add Bill
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overview Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Total Monthly Bills</h6>
+                            <h3 class="card-title mb-0">$0.00</h3>
+                            <small class="text-muted">Due this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Active Subscriptions</h6>
+                            <h3 class="card-title mb-0">0</h3>
+                            <small class="text-muted">Monthly recurring</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Upcoming Payments</h6>
+                            <h3 class="card-title mb-0">0</h3>
+                            <small class="text-muted">Next 7 days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Bills -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Upcoming Bills</h5>
+                    <div class="list-group">
+                        <!-- Example Bill -->
+                        <div class="list-group-item border-0 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="subscription-icon utility">
+                                        <i class="bi bi-lightning-charge"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Electricity Bill</h6>
+                                        <small class="text-muted">Due in 5 days</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-1">$150.00</h6>
+                                    <button class="btn btn-sm btn-primary">Pay Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Subscriptions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Active Subscriptions</h5>
+                    <div class="list-group">
+                        <!-- Netflix Subscription -->
+                        <div class="list-group-item border-0 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="subscription-icon netflix">
+                                        <i class="bi bi-play-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Netflix</h6>
+                                        <small class="text-muted">Premium Plan • Monthly</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-1">$19.99</h6>
+                                    <small class="text-muted">Next payment: Jan 1, 2024</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Spotify Subscription -->
+                        <div class="list-group-item border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="subscription-icon spotify">
+                                        <i class="bi bi-music-note-beamed"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Spotify</h6>
+                                        <small class="text-muted">Family Plan • Monthly</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-1">$14.99</h6>
+                                    <small class="text-muted">Next payment: Jan 5, 2024</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Payment History</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-12-01</td>
+                                    <td>Netflix Subscription</td>
+                                    <td>$19.99</td>
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">View Receipt</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2023-12-01</td>
+                                    <td>Electricity Bill</td>
+                                    <td>$150.00</td>
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">View Receipt</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bill Modal -->
+    <div class="modal fade" id="addBillModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Bill</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBillForm">
+                        <div class="mb-3">
+                            <label class="form-label">Bill Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select Bill Type</option>
+                                <option value="utility">Utility Bill</option>
+                                <option value="subscription">Subscription</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Recurring</label>
+                            <select class="form-select" required>
+                                <option value="no">No</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="autoPayment">
+                            <label class="form-check-label" for="autoPayment">
+                                Enable Auto Payment
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add Bill</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show modal function
+        function showModal(type) {
+            const modal = new bootstrap.Modal(document.getElementById('addBillModal'));
+            modal.show();
+        }
+
+        // Handle form submission
+        document.getElementById('addBillForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add bill processing logic here
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addBillModal'));
+            modal.hide();
+        });
+    </script>
+</body>
+</html> 
