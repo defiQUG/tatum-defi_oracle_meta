@@ -1,0 +1,37 @@
+# Environment variables
+.env
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Package manager
+.npmrc
+.pnpm-debug.log
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Snyk
+.snyk-history
+.dccache
+.snyk-cache
