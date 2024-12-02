@@ -23,7 +23,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "express-csrf-double-submit-cookie": "^1.2.1",
-    "web3": "^1.5.2"
+    "web3": "^4.13.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.18.0",
