@@ -10,6 +10,10 @@ ignore:
     - '*':
         reason: 'Indirect dependency, no direct usage'
         expires: 2024-12-31T00:00:00.000Z
+  'SNYK-JS-WEB3-174533':
+    - '*':
+        reason: 'Known limitation in web3.js library, credentials handled securely in application code'
+        expires: 2024-12-31T00:00:00.000Z
 # patches apply the minimum changes required to fix a vulnerability
 patch: {}
 exclude:
