@@ -96,7 +96,7 @@
     "lru-cache": "^11.0.2",
     "mongoose": "^8.8.3",
     "pdfkit": "^0.15.1",
-    "pino": "^8.19.0",
+    "pino": "^9.5.0",
     "pino-pretty": "^10.3.1",
     "rate-limiter-flexible": "^4.0.1",
     "superagent": "^10.1.1",
